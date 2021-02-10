@@ -148,6 +148,8 @@ cor_http_t *cor_http_new(struct ev_loop *loop, const char *host, int port,
 void cor_http_delete(cor_http_t *ctx);
 int cor_http_start(cor_http_t *ctx, cor_http_cb_t *cb, void *arg);
 
+const char *cor_http_method_name(int method);
+
 cor_str_t *cor_http_request_get_param(cor_http_request_t *r, const char *key, int size);
 cor_str_t *cor_http_request_get_header(cor_http_request_t *r, const char *key, int size);
 cor_str_t *cor_http_request_get_cookie(cor_http_request_t *r, const char *key, int size);

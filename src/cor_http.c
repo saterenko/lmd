@@ -114,6 +114,26 @@ cor_http_start(cor_http_t *ctx, cor_http_cb_t *cb, void *arg)
     return cor_ok;
 }
 
+const char *
+cor_http_method_name(int method)
+{
+    static const char *names[] = {
+        "UNKNOWN", // 0
+        "DELETE", // COR_HTTP_DELETE
+        "GET", // COR_HTTP_GET
+        "HEAD", // COR_HTTP_HEAD
+        "OPTIONS", // COR_HTTP_OPTIONS
+        "POST", // COR_HTTP_POST
+        "PUT", // COR_HTTP_PUT
+        "TRACE" // COR_HTTP_TRACE
+    };
+
+    if (method >= COR_HTTP_DELETE && method <= COR_HTTP_TRACE) {
+        return names[method];
+    }
+    return names[0];
+}
+
 cor_str_t *
 cor_http_request_get_param(cor_http_request_t *r, const char *key, int size)
 {
@@ -243,15 +263,15 @@ cor_http_response_add_cookie(cor_http_response_t *r, cor_http_cookie_t *cookie)
 int
 cor_http_response_send(cor_http_response_t *r)
 {
-    static char response200[] = "HTTP/1.1 200 OK\r\n";
-    static char response302[] = "HTTP/1.1 302 Found\r\n";
-    static char response400[] = "HTTP/1.1 400 Bad Request\r\n";
-    static char response404[] = "HTTP/1.1 404 Not Found\r\n";
-    static char response405[] = "HTTP/1.1 405 Method Not Allowed\r\n";
-    static char response500[] = "HTTP/1.1 500 Internal Server Error\r\n";
-    static char response501[] = "HTTP/1.1 501 Not Implemented\r\n";
-    static char response_keep_alive[] = "Connection: keep-alive\r\n";
-    static char response_close[] = "Connection: close\r\n";
+    static const char response302[] = "HTTP/1.1 302 Found\r\n";
+    static const char response200[] = "HTTP/1.1 200 OK\r\n";
+    static const char response400[] = "HTTP/1.1 400 Bad Request\r\n";
+    static const char response404[] = "HTTP/1.1 404 Not Found\r\n";
+    static const char response405[] = "HTTP/1.1 405 Method Not Allowed\r\n";
+    static const char response500[] = "HTTP/1.1 500 Internal Server Error\r\n";
+    static const char response501[] = "HTTP/1.1 501 Not Implemented\r\n";
+    static const char response_keep_alive[] = "Connection: keep-alive\r\n";
+    static const char response_close[] = "Connection: close\r\n";
     /**/
     cor_http_request_t *request = r->request;
     if (!request) {

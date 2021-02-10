@@ -4,6 +4,7 @@
 
 static void lmd_delete(lmd_ctx_t *ctx);
 static void lmd_http_cb(cor_http_request_t *r, void *arg);
+static void lmd_command_set_limits(cor_http_request_t *r);
 
 int
 main(int argc, char **argv)
@@ -63,10 +64,34 @@ lmd_http_cb(cor_http_request_t *r, void *arg)
 {
     lmd_ctx_t *ctx = (lmd_ctx_t *) arg;
     cor_log_debug(ctx->log, "request handled, sd: %d", r->sd);
+    cor_log_debug(ctx->log, "path: %.*s", (int) r->path.size, r->path.data);
+    switch (r->method) {
+        case COR_HTTP_POST:
+            switch (r->path.size) {
+                case 11:
+                    if (strncmp(r->path.data, "/set-limits", 11) == 0) {
+                        return lmd_command_set_limits(r);
+                    }
+                    break;
+            }
+            break;
+    }
+    cor_log_warn(ctx->log, "bad request, method %s, path: %.*s", cor_http_method_name(r->method),
+        (int) r->path.size, r->path.data);
     /**/
     cor_http_response_t res;
     cor_http_response_init(&res, r);
+    cor_http_response_set_code(&res, 400);
+    cor_http_response_set_body(&res, "bad request", 11);
+    cor_http_response_send(&res);
+}
+
+static void
+lmd_command_set_limits(cor_http_request_t *r)
+{
+    cor_http_response_t res;
+    cor_http_response_init(&res, r);
     cor_http_response_set_code(&res, 200);
-    cor_http_response_set_body(&res, "answer", 6);
+    cor_http_response_set_body(&res, "set-limits", 10);
     cor_http_response_send(&res);
 }
